@@ -1,0 +1,17 @@
+osmfilter macedonia-latest_01.osm --keep="book-stores" | osmconvert64-0.8.8p.exe - --all-to-nodes --csv="@id @lon @lat name" --csv-headline --csv-separator="," -o="databasebookstores_DIAS.csv"
+-Филтер кој што ги зема податоците од OpenStreetMap и ги внесува во .cvs документ
+
+tail -n24 ./databasebookstores_DIAS.csv
+-Команда за принтање на сите податоци од базата
+
+cat ./databasebookstores_DIAS.csv | sed -n 2'p' | tr ',' '\n' | while read word; do
+    echo $word
+done
+-Команда за одделување на сите податоци во посебен ред
+
+coords=$(curl ipinfo.io/loc)
+echo $coords
+IFS=, read -ra ary <<<"$coords"
+echo "${ary[0]}" "${ary[1]}"
+-Команда за наоѓање на моменталната локација на корисникот и ги принта неговите координати
+
