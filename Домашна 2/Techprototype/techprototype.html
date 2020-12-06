@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bookstores Skopje</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+          integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+          crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+            crossorigin=""></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+            integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"
+            integrity="sha384-LtrjvnR4Twt/qOuYxE721u19sVFLVSA4hf/rRt6PrZTmiPltdZcI7q7PXQBYTKyf"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+          integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+    <style>
+        footer {
+            padding: 30px 0;
+            background-color: #969696;
+
+        }
+
+        .navbar {
+
+            background-color: #969696 !important;
+        }
+
+        .navbar-nav {
+            margin-left: auto;
+        }
+
+        #ikona {
+            color: #232323;
+            margin-right: 10px;
+        }
+
+        #mapid {
+            height: calc(100vh - (116px + 86px));
+            padding: 0 !important;
+
+        }
+        form button{
+            display: inline-block;
+            padding: 0 10px;
+            margin: 0 5px;
+        }
+       form{
+           margin-left: 10px;
+           width: 650px;
+       }
+        .col-9{
+            padding: 0 !important;
+        }
+        html{
+            overflow-y: hidden;
+        }
+        .col-3{
+            height: calc(100vh - (116px + 86px));
+            overflow: auto;
+        }
+        li{
+            font-family: Consolas, monospace;
+            font-size: 0.89em;
+        }
+
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <img src="images.png" height="70"/>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <form class="form-inline">
+        <input class="form-control form-control-sm mr-3 w-55" type="text" placeholder="Search"
+               aria-label="Search">
+        <a id="ikona" href="#"><i class="fas fa-search" aria-hidden="true"></i> </a>
+        <button class="btn btn-secondary">Find</button>
+        <button class="btn btn-secondary">Find Nearest</button>
+    </form>
+
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+            <a class="nav-item nav-link" href="#">Contact</a>
+            <a class="nav-item nav-link" href="#">About</a>
+            <a class="nav-item nav-link" href="#">Help</a>
+        </div>
+        <div class="custom-control custom-switch">
+            <label class="custom-control-label" for="customSwitch1">Dark Mode</label>
+            <input type="checkbox" class="custom-control-input" id="customSwitch1">
+        </div>
+    </div>
+</nav>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-9">
+            <div id="mapid">
+            </div>
+            <script>
+                var mymap = L.map('mapid').setView([41.9981, 21.4254], 13);
+                L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                    maxZoom: 18,
+                    id: 'mapbox/streets-v11',
+                    tileSize: 512,
+                    zoomOffset: -1,
+                    accessToken: 'pk.eyJ1IjoidGVkZHRzeCIsImEiOiJja2ljN3Q0ejkxNzIzMnlyc2ZrdWptbGFwIn0.UY5NhACafHt0n377fhB91Q'
+                }).addTo(mymap);
+                var marker = L.marker([41.995647,21.42729]).addTo(mymap);
+                marker.bindPopup("<b>ИЛИ-ИЛИ</b><br>Dimitrie Chupovski 20a, Skopje 1000.").openPopup();
+            </script>
+        </div>
+        <div class="col-3">
+            <div class="overflow-auto">
+                <ul>
+                    <li>1,"Мито Хаџивасилев-Јасмин, Скопје 1000",Центар,Стрип Книжарница Бункер,23232480,41.99258,21.427126</li>
+                    <li>2,Св. Кирил и Методиj Скопје 1000,Центар,Икона,3227850,41.99148,21.42765</li>
+                    <li>3,"MK, Lazar Tanev, Skopje 1010",Стара Скопска Чаршија,Македонско катче,70319929,42.000763,21.436697</li>
+                    <li>4,"Ул. Васил Главинов бр.3 (локал 15), 1000 Скопје, Македонија",Центар,Или-Или,23225445,41.995647,21.42729</li>
+                    <li>5,"MK, Булевар Партизански Одреди 102/2-1, Скопје 1000",Карпош 2,Купи Книга,23204405,42.00343,21.396705</li>
+                    <li>6,"Божидар Аџија 3, Скопје 1000",Кисела Вода,Тримакс 2,22777368,41.979951,21.437339</li>
+                    <li>7,"Булевар Јане Сандански 71A, Скопје 1000",Аеродром,Просветно дело,25111988,41.9859,21.466477</li>
+                    <li>8,Градски ѕид блок 3 лок.12; Место,Центар,Англиски ценар,23109372,41.992871,21.427668</li>
+                    <li>9,"ул. Македониjа 43, Скопје 1000",Центар,Култура,23296763,41.995592,21.431086</li>
+                    <li>10,"Dame Gruev broj 7 lokal 7, Skopje 1000",Центар,Просветно Дело,23117558,41.994341,21.427605</li>
+                    <li>11,"Даме Груев 3, Скопје 1000",Центар,Студентски Збор,3222976,41.996109,21.427659</li>
+                    <li>12,"Franklin Ruzvelt 4, Skopje 1000",Тафталиџе,Тримакс бр.6,25511630,41.994038,21.412036</li>
+                    <li>13,"Димитрие Чуповски 26/1-1, Skopje 1000",Центар,Полица,23257273,41.995608,21.42547</li>
+                    <li>14,"ул MK, Васил Ѓоргов бр.16, Скопје 1000",Козле,Книжара ТРИ,23245622,41.992789,21.419997</li>
+                    <li>15,"MK, Maksim Gorki 17, Skopje 1000",Центар,Икона,23222543,41.996061,21.428685</li>
+                    <li>16,"MK, Булевар Свети Климент Охридски 23, Скопје 1000",Центар,Клуб Матица,23221138,41.995862,21.425228</li>
+                    <li>17,"Porta Bunjakovec, MK, Булевар Партизански Одреди 23, Скопје 1000",Дебар Маало,Академска Книга,23125510,41.998412,21.423621</li>
+                    <li>18,"Христо Татарчев 47в, Скопје 1000",Кисела Вода,Наша Книжара,71367676,41.974018,21.445596</li>
+                    <li>19,бул.Кузман Јосифовски-Питу 15/6,Адриан Другарчето,Тримакс,22401280,41.988942,21.450712</li>
+                    <li>20,"бул. Партизански одреди бр. 88, М3-33 Карпош 4",Карпош 4,Тримакс,25517445,42.005011,21.383809</li>
+                    <li>21,"MK, Булевар Партизански Одреди 102/2-1, Скопје 1000",Лептокарија,Купи книга,23204405,42.003431,21.396704</li>
+                    <li>22,ул. Димитрие Чуповски бр.10,Центар,Тримакс 4,23232233,41.994792,21.430127</li>
+                    <li>23,"ГТЦ Приземје, локал 8, Skopje 1000",Центар,Книжарница ТОПЕР,23121937,41.994511,21.43561</li>
+                    <li>24,"ул. Македониjа, Скопје 1000",Центар,Литература мк,78264754,41.994047,21.430463</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="page-footer font-small blue">
+
+    <!-- Copyright -->
+    <div class="footer-copyright text-center py-3">© 2020 Copyright:
+        <a href="https://mdbootstrap.com/"> Bookstores Skopje</a>
+    </div>
+    <!-- Copyright -->
+
+</footer>
+<!-- Footer -->
+<script>
+    $("[name='customSwitch1']").bootstrapSwitch();
+</script>
+</body>
+</html>
