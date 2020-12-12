@@ -9,3 +9,6 @@ class Store(models.Model):
     number = models.CharField(max_length=256)
     lat = models.FloatField()
     long = models.FloatField()
+
+    def __str__(self):
+        return self.name
