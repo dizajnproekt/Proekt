@@ -1,0 +1,165 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Bookstores Skopje</title>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+          integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+          crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+            integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+            crossorigin=""></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+            integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"
+            integrity="sha384-LtrjvnR4Twt/qOuYxE721u19sVFLVSA4hf/rRt6PrZTmiPltdZcI7q7PXQBYTKyf"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+          integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+    <style>
+        footer {
+            padding: 30px 0;
+            background-color: #969696;
+
+        }
+
+        .navbar {
+
+            background-color: #969696 !important;
+        }
+
+        .navbar-nav {
+            margin-left: auto;
+        }
+
+        #ikona {
+            color: #232323;
+            margin-right: 10px;
+        }
+
+        #mapid {
+            height: calc(100vh - (116px + 86px));
+            padding: 0 !important;
+
+        }
+        form button{
+            display: inline-block;
+            padding: 0 10px;
+            margin: 0 5px;
+        }
+       form{
+           margin-left: 10px;
+           width: 650px;
+       }
+        .col-9{
+            padding: 0 !important;
+        }
+        html{
+            overflow-y: hidden;
+        }
+        .col-3{
+            height: calc(100vh - (116px + 86px));
+            overflow: auto;
+        }
+        li{
+            font-family: Consolas, monospace;
+            font-size: 0.89em;
+        }
+
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <img src="{% static 'stores/img/logo.png' %}" height="70"/>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup"
+            aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <form class="form-inline">
+        <input class="form-control form-control-sm mr-3 w-55" type="text" placeholder="Search by Name"
+               aria-label="Search">
+        <a id="ikona" href="#"><i class="fas fa-search" aria-hidden="true"></i> </a>
+        <button class="btn btn-secondary">Find</button>
+        <button class="btn btn-secondary">Find Nearest</button>
+    </form>
+
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+            <a class="nav-item nav-link" href="#">Contact</a>
+            <a class="nav-item nav-link" href="#">About</a>
+            <a class="nav-item nav-link" href="#">Help</a>
+        </div>
+        <div class="custom-control custom-switch">
+            <label class="custom-control-label" for="customSwitch1">Dark Mode</label>
+            <input type="checkbox" class="custom-control-input" id="customSwitch1">
+        </div>
+    </div>
+</nav>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-9">
+            <div id="mapid">
+            </div>
+            <script>
+                var mymap = L.map('mapid').setView([41.9981, 21.4254], 13);
+                L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+                    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                    maxZoom: 18,
+                    id: 'mapbox/streets-v11',
+                    tileSize: 512,
+                    zoomOffset: -1,
+                    accessToken: 'pk.eyJ1IjoidGVkZHRzeCIsImEiOiJja2ljN3Q0ejkxNzIzMnlyc2ZrdWptbGFwIn0.UY5NhACafHt0n377fhB91Q'
+                }).addTo(mymap);
+
+
+                {% for store in stores %}
+
+                   var marker = L.marker([{{ store.lat }}, {{ store.long }}]).addTo(mymap);
+                   marker.bindPopup("<b>{{store.name}}</b><br>{{store.address}}").openPopup();
+
+                {% endfor %}
+
+
+
+
+
+            </script>
+        </div>
+        <div class="col-3">
+            <div class="overflow-auto">
+                <ul>
+                    {% for store in stores %}
+                        <li>{{ store.id }}, {{ store.address }}, {{ store.municipality }}, {{ store.name }},
+                            {{ store.number }}, {{ store.lat }}, {{ store.long }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="page-footer font-small blue">
+
+    <!-- Copyright -->
+    <div class="footer-copyright text-center py-3">© 2020 Copyright:
+        <a href="https://mdbootstrap.com/"> Bookstores Skopje</a>
+    </div>
+    <!-- Copyright -->
+
+</footer>
+<!-- Footer -->
+<script>
+    $("[name='customSwitch1']").bootstrapSwitch();
+</script>
+</body>
+</html>
