@@ -21,19 +21,26 @@
             crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
           integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.5.3/umd/popper.min.js"
+            integrity="sha512-53CQcu9ciJDlqhK7UD8dZZ+TF2PFGZrOngEYM/8qucuQba+a+BXOIRsp9PoMNJI3ZeLMVNIxIfZLbG/CdHI5PA=="
+            crossorigin="anonymous"></script>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'stores/css/dark-mode.css' %}">
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
     <style>
         footer {
             padding: 30px 0;
-            background-color: #969696;
+            background-color: #969696 !important;
 
         }
 
         .navbar {
 
+            background-color: #969696 !important;
+        }
+
+        .bg-light {
             background-color: #969696 !important;
         }
 
@@ -100,14 +107,31 @@
 
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
-            <a class="nav-item nav-link" href="#">Contact</a>
-            <a class="nav-item nav-link" href="#">About</a>
-            <a class="nav-item nav-link" href="#">Help</a>
+            <a class="nav-item nav-link" href="#">
+                <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                        title="Tooltip on bottom">
+                    Contact
+                </button>
+            </a>
+            <a class="nav-item nav-link" href="#">
+                <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                        title="Tooltip on bottom">
+                    About
+                </button>
+            </a>
+            <a class="nav-item nav-link" href="#">
+                <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="bottom"
+                        title="Tooltip on bottom">
+                    Help
+                </button>
+            </a>
         </div>
         <div class="custom-control custom-switch">
-            <input type="checkbox" class="custom-control-input" id="customSwitch1">
-            <label class="custom-control-label" for="customSwitch1">Dark Mode</label>
+            <input type="checkbox" class="custom-control-input" id="darkSwitch">
+            <label class="custom-control-label" for="darkSwitch">Dark Mode</label>
         </div>
+        <script src="{% static 'stores/js/dark-mode.js' %}"></script>
+
     </div>
 </nav>
 <div class="container-fluid">
@@ -116,9 +140,14 @@
             <div id="mapid">
             </div>
             <script>
+                $(function () {
+                    $('[data-toggle="tooltip"]').tooltip()
+                })
+
                 var mymap = L.map('mapid').setView([41.9981, 21.4254], 13);
                 var myposition = null;
                 var positions = [];
+                var staticPositions=[];
                 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
                     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
                     maxZoom: 18,
@@ -129,6 +158,7 @@
                 }).addTo(mymap);
 
                 {% for store in stores %}
+
 
                     var marker = L.marker([{{ store.lat }}, {{ store.long }}]).addTo(mymap);
                     marker.bindPopup("<b>{{store.name}}</b><br>{{store.address}}").openPopup();
@@ -141,7 +171,7 @@
 
                 {% endfor %}
 
-
+                staticPositions=positions;
                 function distance(lat1, lon1, lat2, lon2, unit) {
                     var radlat1 = Math.PI * lat1 / 180
                     var radlat2 = Math.PI * lat2 / 180
@@ -197,19 +227,21 @@
                 }
 
                 function search() {
+                    positions=staticPositions;
                     let query = document.getElementById('field').value;
                     if (query === "") {
                         return;
                     }
                     let newpos = [];
+                    console.log(positions);
                     for (let i = 0; i < positions.length; i++) {
-                        console.log(positions[i].name);
-                        console.log(query);
+                        {% comment %}console.log(positions[i].name);
+                        console.log(query);{% endcomment %}
                         if (positions[i].name.toLowerCase().includes(query.toLowerCase())) {
                             newpos.push(positions[i]);
                         }
                     }
-                    console.log(newpos);
+                    {% comment %}console.log(newpos);{% endcomment %}
                     positions = newpos;
                     mymap.eachLayer(function (layer) {
                         mymap.removeLayer(layer);
@@ -245,7 +277,7 @@
 </div>
 
 <!-- Footer -->
-<footer class="page-footer font-small blue">
+<footer class="page-footer font-small bg-light">
 
     <!-- Copyright -->
     <div class="footer-copyright text-center py-3">© 2020 Copyright:

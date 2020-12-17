@@ -4371,7 +4371,7 @@ fixed.replace = function(search, replacement) {
                     }
                     return args[$2] || '';
                 }
-                // `$` followed by an unsupported char is an error, unlike native JS
+                // `$` followed by an unsupported char is an error, unlike native js
                 throw new SyntaxError('Invalid token ' + $0);
             });
         });
