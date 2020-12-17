@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
           integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
 
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
     <style>
@@ -51,26 +51,32 @@
             padding: 0 !important;
 
         }
-        form button{
+
+        form button {
             display: inline-block;
             padding: 0 10px;
             margin: 0 5px;
         }
-       form{
-           margin-left: 10px;
-           width: 650px;
-       }
-        .col-9{
+
+        form {
+            margin-left: 10px;
+            width: 650px;
+        }
+
+        .col-9 {
             padding: 0 !important;
         }
-        html{
+
+        html {
             overflow-y: hidden;
         }
-        .col-3{
+
+        .col-3 {
             height: calc(100vh - (116px + 86px));
             overflow: auto;
         }
-        li{
+
+        li {
             font-family: Consolas, monospace;
             font-size: 0.89em;
         }
@@ -89,7 +95,7 @@
                aria-label="Search">
         <a id="ikona" href="#"><i class="fas fa-search" aria-hidden="true"></i> </a>
         <button class="btn btn-secondary">Find</button>
-        <button class="btn btn-secondary">Find Nearest</button>
+        <button class="btn btn-secondary" onclick="findNearest()" type="button">Find Nearest</button>
     </form>
 
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
@@ -111,6 +117,8 @@
             </div>
             <script>
                 var mymap = L.map('mapid').setView([41.9981, 21.4254], 13);
+                var myposition = null;
+                var positions = [];
                 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
                     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
                     maxZoom: 18,
@@ -120,18 +128,70 @@
                     accessToken: 'pk.eyJ1IjoidGVkZHRzeCIsImEiOiJja2ljN3Q0ejkxNzIzMnlyc2ZrdWptbGFwIn0.UY5NhACafHt0n377fhB91Q'
                 }).addTo(mymap);
 
-
                 {% for store in stores %}
 
-                   var marker = L.marker([{{ store.lat }}, {{ store.long }}]).addTo(mymap);
-                   marker.bindPopup("<b>{{store.name}}</b><br>{{store.address}}").openPopup();
+                    var marker = L.marker([{{ store.lat }}, {{ store.long }}]).addTo(mymap);
+                    marker.bindPopup("<b>{{store.name}}</b><br>{{store.address}}").openPopup();
+                    positions.push({
+                        lat:{{ store.lat }},
+                        long:{{ store.long }}
+                    });
 
                 {% endfor %}
 
+                function distance(lat1, lon1, lat2, lon2, unit) {
+                    var radlat1 = Math.PI * lat1 / 180
+                    var radlat2 = Math.PI * lat2 / 180
+                    var theta = lon1 - lon2
+                    var radtheta = Math.PI * theta / 180
+                    var dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
+                    if (dist > 1) {
+                        dist = 1;
+                    }
+                    dist = Math.acos(dist)
+                    dist = dist * 180 / Math.PI
+                    dist = dist * 60 * 1.1515
+                    if (unit == "K") {
+                        dist = dist * 1.609344
+                    }
+                    if (unit == "N") {
+                        dist = dist * 0.8684
+                    }
+                    return dist
+                }
 
+                function showPosition() {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(function (position) {
+                            var positionInfo = "Your current position is (" + "Latitude: " + position.coords.latitude + ", " + "Longitude: " + position.coords.longitude + ")";
+                            console.log(positionInfo);
+                            myposition = {
+                                lat: position.coords.latitude,
+                                long: position.coords.longitude
+                            };
+                            var marker = L.marker([position.coords.latitude, position.coords.longitude]).addTo(mymap);
+                            marker.bindPopup("<b>Your Current location</b>").openPopup();
+                        });
+                    } else {
+                        alert("Sorry, your browser does not support HTML5 geolocation.");
+                    }
+                }
 
+                showPosition();
 
-
+                function findNearest() {
+                    let index = 0;
+                    let mindistance = distance(myposition.lat, myposition.long, positions[0].lat, positions[0].long, "K");
+                    for (let i = 0; i < positions.length; i++) {
+                        if (distance(myposition.lat, myposition.long, positions[i].lat, positions[i].long, "K") < mindistance) {
+                            index = i;
+                            mindistance = distance(myposition.lat, myposition.long, positions[i].lat, positions[i].long, "K");
+                        }
+                    }
+                    var latLon = L.latLng(positions[index].lat, positions[index].long);
+                    var bounds = latLon.toBounds(500); // 500 = metres
+                    mymap.setView(latLon).fitBounds(bounds);
+                }
             </script>
         </div>
         <div class="col-3">
@@ -158,8 +218,5 @@
 
 </footer>
 <!-- Footer -->
-<script>
-    $("[name='customSwitch1']").bootstrapSwitch();
-</script>
 </body>
 </html>
