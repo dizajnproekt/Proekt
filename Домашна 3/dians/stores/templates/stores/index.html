@@ -91,10 +91,10 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <form class="form-inline">
-        <input class="form-control form-control-sm mr-3 w-55" type="text" placeholder="Search by Name"
+        <input class="form-control form-control-sm mr-3 w-55" id="field" type="text" placeholder="Search by Name"
                aria-label="Search">
-        <a id="ikona" href="#"><i class="fas fa-search" aria-hidden="true"></i> </a>
-        <button class="btn btn-secondary">Find</button>
+        <a id="ikona" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+        <button class="btn btn-secondary" type="button" onclick="search()">Find</button>
         <button class="btn btn-secondary" onclick="findNearest()" type="button">Find Nearest</button>
     </form>
 
@@ -105,8 +105,8 @@
             <a class="nav-item nav-link" href="#">Help</a>
         </div>
         <div class="custom-control custom-switch">
-            <label class="custom-control-label" for="customSwitch1">Dark Mode</label>
             <input type="checkbox" class="custom-control-input" id="customSwitch1">
+            <label class="custom-control-label" for="customSwitch1">Dark Mode</label>
         </div>
     </div>
 </nav>
@@ -134,10 +134,13 @@
                     marker.bindPopup("<b>{{store.name}}</b><br>{{store.address}}").openPopup();
                     positions.push({
                         lat:{{ store.lat }},
-                        long:{{ store.long }}
+                        long:{{ store.long }},
+                        name: "{{ store.name }}",
+                        address: "{{ store.address }}"
                     });
 
                 {% endfor %}
+
 
                 function distance(lat1, lon1, lat2, lon2, unit) {
                     var radlat1 = Math.PI * lat1 / 180
@@ -191,6 +194,40 @@
                     var latLon = L.latLng(positions[index].lat, positions[index].long);
                     var bounds = latLon.toBounds(500); // 500 = metres
                     mymap.setView(latLon).fitBounds(bounds);
+                }
+
+                function search() {
+                    let query = document.getElementById('field').value;
+                    if (query === "") {
+                        return;
+                    }
+                    let newpos = [];
+                    for (let i = 0; i < positions.length; i++) {
+                        console.log(positions[i].name);
+                        console.log(query);
+                        if (positions[i].name.toLowerCase().includes(query.toLowerCase())) {
+                            newpos.push(positions[i]);
+                        }
+                    }
+                    console.log(newpos);
+                    positions = newpos;
+                    mymap.eachLayer(function (layer) {
+                        mymap.removeLayer(layer);
+                    });
+                    showPosition();
+                    // var mymap = L.map('mapid').setView([41.9981, 21.4254], 13);
+                    L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+                        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+                        maxZoom: 18,
+                        id: 'mapbox/streets-v11',
+                        tileSize: 512,
+                        zoomOffset: -1,
+                        accessToken: 'pk.eyJ1IjoidGVkZHRzeCIsImEiOiJja2ljN3Q0ejkxNzIzMnlyc2ZrdWptbGFwIn0.UY5NhACafHt0n377fhB91Q'
+                    }).addTo(mymap);
+                    for (let i = 0; i < positions.length; i++) {
+                        var marker = L.marker([positions[i].lat, positions[i].long]).addTo(mymap);
+                        marker.bindPopup("<b>" + positions[i].name + "</b><br>" + positions[i].address).openPopup();
+                    }
                 }
             </script>
         </div>
