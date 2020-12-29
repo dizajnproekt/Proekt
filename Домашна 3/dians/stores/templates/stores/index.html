@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <title>Bookstores Skopje</title>
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
           integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
           crossorigin=""/>
@@ -83,7 +84,7 @@
                 $(function () {
                     $('[data-toggle="tooltip"]').tooltip()
                 })
-
+{% comment %}
                 var mymap = L.map('mapid').setView([41.9981, 21.4254], 13);
                 var myposition = null;
                 var positions = [];
@@ -175,13 +176,13 @@
                     let newpos = [];
                     console.log(positions);
                     for (let i = 0; i < positions.length; i++) {
-                        {% comment %}console.log(positions[i].name);
-                        console.log(query);{% endcomment %}
+                        console.log(positions[i].name);
+                        console.log(query);
                         if (positions[i].name.toLowerCase().includes(query.toLowerCase())) {
                             newpos.push(positions[i]);
                         }
                     }
-                    {% comment %}console.log(newpos);{% endcomment %}
+                    console.log(newpos);
                     positions = newpos;
                     mymap.eachLayer(function (layer) {
                         mymap.removeLayer(layer);
@@ -200,7 +201,7 @@
                         var marker = L.marker([positions[i].lat, positions[i].long]).addTo(mymap);
                         marker.bindPopup("<b>" + positions[i].name + "</b><br>" + positions[i].address).openPopup();
                     }
-                }
+                }{% endcomment %}
             </script>
         </div>
         <div class="col-3">
@@ -226,6 +227,7 @@
     <!-- Copyright -->
 
 </footer>
+<script src="{% static "stores/js/page-functions.js" %}"></script>
 <!-- Footer -->
 </body>
 </html>
